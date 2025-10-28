@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme-provider";
-import { FirebaseClientProvider } from "@/firebase";
 import "./globals.css";
 import ClientSessionProvider from "./session-provider";
 import { ModalProvider } from "@/context/modal-context";
@@ -38,12 +37,10 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <ClientSessionProvider>
-            <FirebaseClientProvider>
-              <ModalProvider>
-                {children}
-                <Toast />
-              </ModalProvider>
-            </FirebaseClientProvider>
+            <ModalProvider>
+              {children}
+              <Toast />
+            </ModalProvider>
           </ClientSessionProvider>
         </ThemeProvider>
       </body>
