@@ -15,9 +15,11 @@ export async function GET() {
       .sort({ createdAt: -1 })
       .toArray();
     const formattedCategories = categories.map((c) => ({
-      ...c,
       id: c._id.toString(),
-      createdAt: c.createdAt || new Date(0).toISOString(), // Use epoch start for categories without createdAt to put them last
+      name: c.name,
+      description: c.description,
+      createdAt: c.createdAt || new Date(0).toISOString(),
+      ...(c.modifiedAt && { modifiedAt: c.modifiedAt }),
     }));
     console.log(
       "Categories data (sorted by createdAt desc):",
