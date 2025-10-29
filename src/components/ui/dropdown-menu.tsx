@@ -157,10 +157,10 @@ const DropdownMenuContent = React.forwardRef<
         }
       }}
       className={cn(
-        "z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md animate-in fade-in-80",
+        "absolute z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md animate-in fade-in-80",
         className
       )}
-      style={{ marginTop: `${sideOffset}px` }}
+      style={{ top: `${sideOffset}px`, left: 0 }}
       {...props}
     />
   );
