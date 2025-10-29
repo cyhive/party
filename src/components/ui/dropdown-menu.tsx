@@ -8,7 +8,8 @@ import { cn } from "@/lib/utils";
 interface DropdownMenuContextType {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  triggerRef: React.RefObject<HTMLButtonElement>;
+  triggerRef: React.MutableRefObject<HTMLElement | null>;
+  contentRef: React.MutableRefObject<HTMLElement | null>;
 }
 
 const DropdownMenuContext = React.createContext<DropdownMenuContextType | null>(
@@ -34,7 +35,8 @@ const DropdownMenu = ({ children, open, onOpenChange }: DropdownMenuProps) => {
   const [internalOpen, setInternalOpen] = React.useState(false);
   const isControlled = open !== undefined;
   const isOpen = isControlled ? open : internalOpen;
-  const triggerRef = React.useRef<HTMLButtonElement>(null);
+  const triggerRef = React.useRef<HTMLElement | null>(null);
+  const contentRef = React.useRef<HTMLElement | null>(null);
 
   const setIsOpen = React.useCallback(
     (value: React.SetStateAction<boolean>) => {
@@ -49,7 +51,9 @@ const DropdownMenu = ({ children, open, onOpenChange }: DropdownMenuProps) => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         triggerRef.current &&
-        !triggerRef.current.contains(event.target as Node)
+        !triggerRef.current.contains(event.target as Node) &&
+        contentRef.current &&
+        !contentRef.current.contains(event.target as Node)
       ) {
         setIsOpen(false);
       }
@@ -65,23 +69,65 @@ const DropdownMenu = ({ children, open, onOpenChange }: DropdownMenuProps) => {
   }, [isOpen, setIsOpen]);
 
   return (
-    <DropdownMenuContext.Provider value={{ isOpen, setIsOpen, triggerRef }}>
+    <DropdownMenuContext.Provider
+      value={{ isOpen, setIsOpen, triggerRef, contentRef }}
+    >
       <div className="relative">{children}</div>
     </DropdownMenuContext.Provider>
   );
 };
 
 const DropdownMenuTrigger = React.forwardRef<
-  HTMLButtonElement,
-  React.ButtonHTMLAttributes<HTMLButtonElement>
->(({ className, children, ...props }, ref) => {
+  HTMLElement,
+  React.ButtonHTMLAttributes<HTMLButtonElement> & { asChild?: boolean }
+>(({ className, children, asChild, ...props }, ref) => {
   const { setIsOpen, triggerRef } = useDropdownMenu();
+
+  const handleClick = () => setIsOpen((prev) => !prev);
+
+  if (asChild && React.isValidElement(children)) {
+    return React.cloneElement(children, {
+      ...props,
+      onClick: (event: React.MouseEvent) => {
+        handleClick();
+        children.props.onClick?.(event);
+      },
+      ref: (node: HTMLElement | null) => {
+        if (triggerRef.current !== node) {
+          triggerRef.current = node;
+        }
+        if (ref) {
+          if (typeof ref === "function") {
+            ref(node);
+          } else {
+            ref.current = node;
+          }
+        }
+        if (children.props.ref) {
+          if (typeof children.props.ref === "function") {
+            children.props.ref(node);
+          } else {
+            children.props.ref.current = node;
+          }
+        }
+      },
+    } as any);
+  }
 
   return (
     <button
-      ref={triggerRef}
+      ref={(node) => {
+        triggerRef.current = node;
+        if (ref) {
+          if (typeof ref === "function") {
+            ref(node as HTMLButtonElement);
+          } else {
+            ref.current = node as HTMLButtonElement;
+          }
+        }
+      }}
       className={cn("outline-none", className)}
-      onClick={() => setIsOpen((prev) => !prev)}
+      onClick={handleClick}
       {...props}
     >
       {children}
@@ -94,18 +140,27 @@ const DropdownMenuContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & { sideOffset?: number }
 >(({ className, sideOffset = 4, ...props }, ref) => {
-  const { isOpen } = useDropdownMenu();
+  const { isOpen, contentRef } = useDropdownMenu();
 
   if (!isOpen) return null;
 
   return (
     <div
-      ref={ref}
+      ref={(node) => {
+        contentRef.current = node;
+        if (ref) {
+          if (typeof ref === "function") {
+            ref(node);
+          } else {
+            ref.current = node;
+          }
+        }
+      }}
       className={cn(
         "z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md animate-in fade-in-80",
         className
       )}
-      style={{ marginTop: sideOffset }}
+      style={{ marginTop: `${sideOffset}px` }}
       {...props}
     />
   );
