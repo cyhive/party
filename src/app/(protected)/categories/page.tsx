@@ -133,7 +133,7 @@ export default function CategoriesPage() {
           <div>
             <h2 className="text-2xl font-bold tracking-tight">Categories</h2>
             <p className="text-muted-foreground">
-              Here&apos;s a list of your product categories.
+              Here&apos;s a list of your Member categories.
             </p>
           </div>
           <Button onClick={() => openModal("createCategory")}>

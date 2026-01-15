@@ -19,7 +19,7 @@ import { useEffect } from "react";
 const navItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/orders", icon: ShoppingCart, label: "Orders" },
-  { href: "/products", icon: Package, label: "Products" },
+  { href: "/members", icon: Package, label: "Members" },
   { href: "/categories", icon: Package, label: "Categories" },
   { href: "/customers", icon: Users, label: "Customers" },
   { href: "/promotions", icon: TicketPercent, label: "Promotions" },

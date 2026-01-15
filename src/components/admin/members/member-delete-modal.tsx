@@ -32,13 +32,12 @@ export function DeleteModal({
   }
 
   const isBulkDelete = modal.type === `confirmDelete${entityNamePlural}`;
-  const {
-    [entityName.toLowerCase()]: singleItem,
-    [entityNamePlural.toLowerCase()]: items,
-    count,
-  } = (modal as any).data as {
-    [key: string]: any;
-  };
+  const modalData = (modal as any).data as { [key: string]: any };
+
+  const singleItem = modalData[entityName] || modalData[entityName.toLowerCase()];
+  const items =
+    modalData[entityNamePlural] || modalData[entityNamePlural.toLowerCase()];
+  const count = modalData.count;
 
   const handleConfirm = () => {
     if (isBulkDelete && items) {

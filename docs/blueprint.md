@@ -3,12 +3,12 @@
 ## Core Features:
 
 - Dashboard Overview: Provide a summary of key metrics like sales, orders, and customer activity. Display charts and graphs for easy understanding.
-- Product Management: Enable adding, editing, and deleting products with details such as name, description, price, and images.
+- Member Management: Enable adding, editing, and deleting Members with details such as name, description, price, and images.
 - Order Management: Allow viewing, searching, and updating order statuses, along with generating reports on sales and order trends.
 - Customer Management: Manage customer profiles, track their order history, and handle customer support inquiries through a ticketing system.
-- Inventory Management: Track product stock levels, set low stock alerts, and manage inventory updates. Use historical data to predict and manage restocking efficiently.
+- Inventory Management: Track Member stock levels, set low stock alerts, and manage inventory updates. Use historical data to predict and manage restocking efficiently.
 - Promotions and Discounts: Create and manage promotional campaigns, discount codes, and special offers to drive sales.
-- AI-Driven Product Description: A tool that automatically generates product descriptions based on input about the product such as its attributes, images and keywords, using a Large Language Model.
+- AI-Driven Member Description: A tool that automatically generates Member descriptions based on input about the Member such as its attributes, images and keywords, using a Large Language Model.
 
 ## Style Guidelines:
 

@@ -1,16 +1,16 @@
 "use client";
 
 import React, { createContext, useContext, useState, ReactNode } from "react";
-import { Category, Product } from "@/lib/types";
+import { Category, Member } from "@/lib/types";
 
 // Modal type definitions
 export type ModalType =
-  | { type: "createProduct"; data?: Product }
-  | { type: "editProduct"; data: { product: Product } }
-  | { type: "confirmDeleteProduct"; data: { product: Product } }
+  | { type: "createMember"; data?: Member }
+  | { type: "editMember"; data: { Member: Member } }
+  | { type: "confirmDeleteMember"; data: { Member: Member } }
   | {
-      type: "confirmDeleteProducts";
-      data: { products: Product[]; count: number };
+      type: "confirmDeleteMembers";
+      data: { Members: Member[]; count: number };
     }
   | { type: "createCategory"; data?: Category }
   | { type: "editCategory"; data: { category: Category } }

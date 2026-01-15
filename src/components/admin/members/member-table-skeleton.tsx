@@ -1,4 +1,4 @@
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from '../../ui/skeleton';
 import {
   Table,
   TableBody,
@@ -6,9 +6,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from '../../ui/table';
 
-export function ProductTableSkeleton() {
+export function MemberTableSkeleton() {
   return (
     <div className="space-y-4">
       <div className="flex items-center">

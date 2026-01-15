@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
-import ClientSessionProvider from "./session-provider";
+
 import { ModalProvider } from "@/context/modal-context";
 import { Toast } from "@/components/ui/toast";
 
@@ -36,12 +36,12 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <ClientSessionProvider>
+          
             <ModalProvider>
               {children}
               <Toast />
             </ModalProvider>
-          </ClientSessionProvider>
+          
         </ThemeProvider>
       </body>
     </html>

@@ -1,40 +1,40 @@
 
 {
   "entities": {
-    "Product": {
+    "Member": {
       "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Product",
+      "title": "Member",
       "type": "object",
-      "description": "Represents a product in the e-commerce store.",
+      "description": "Represents a Member in the e-commerce store.",
       "properties": {
         "id": {
           "type": "string",
-          "description": "Unique identifier for the product."
+          "description": "Unique identifier for the Member."
         },
         "name": {
           "type": "string",
-          "description": "Name of the product."
+          "description": "Name of the Member."
         },
         "description": {
           "type": "string",
-          "description": "Description of the product."
+          "description": "Description of the Member."
         },
         "price": {
           "type": "number",
-          "description": "Price of the product."
+          "description": "Price of the Member."
         },
         "imageUrl": {
           "type": "string",
-          "description": "URL of the product image.",
+          "description": "URL of the Member image.",
           "format": "uri"
         },
         "inventory": {
           "type": "number",
-          "description": "Current stock level of the product."
+          "description": "Current stock level of the Member."
         },
         "category": {
           "type": "string",
-          "description": "Category of the product."
+          "description": "Category of the Member."
         }
       },
       "required": [
@@ -97,13 +97,13 @@
           "type": "string",
           "description": "Reference to Order. (Relationship: Order 1:N OrderItem)"
         },
-        "productId": {
+        "MemberId": {
           "type": "string",
-          "description": "Reference to Product. (Relationship: Product 1:N OrderItem)"
+          "description": "Reference to Member. (Relationship: Member 1:N OrderItem)"
         },
         "quantity": {
           "type": "number",
-          "description": "Quantity of the product in the order item."
+          "description": "Quantity of the Member in the order item."
         },
         "itemPrice": {
           "type": "number",
@@ -113,7 +113,7 @@
       "required": [
         "id",
         "orderId",
-        "productId",
+        "MemberId",
         "quantity",
         "itemPrice"
       ]
@@ -251,17 +251,17 @@
         }
       },
       {
-        "path": "/products/{productId}",
+        "path": "/members/{MemberId}",
         "definition": {
-          "entityName": "Product",
+          "entityName": "Member",
           "schema": {
-            "$ref": "#/backend/entities/Product"
+            "$ref": "#/backend/entities/Member"
           },
-          "description": "Stores product information.",
+          "description": "Stores Member information.",
           "params": [
             {
-              "name": "productId",
-              "description": "Unique identifier for the product."
+              "name": "MemberId",
+              "description": "Unique identifier for the Member."
             }
           ]
         }
@@ -283,6 +283,6 @@
         }
       }
     ],
-    "reasoning": "The Firestore structure is designed to manage an e-commerce admin panel focusing on products, orders, customers, and promotions. It prioritizes Authorization Independence using path-based ownership for user-specific data and structural segregation for different data types. Since this is an admin panel, we won't have the user generated content. Instead, we will have admin controlled content.\n\n- **Customers:** Customer accounts are managed under `/customers/{customerId}`. This adheres to the Path-Based Ownership access model, simplifying security rules and ensuring each customer's data is isolated and secure. Orders are stored as a subcollection of customers at `/customers/{customerId}/orders/{orderId}`. This establishes a clear parent-child relationship, making it easy to query orders for a specific customer.\n- **Products & Promotions:** Products and promotions are stored in root-level collections `/products` and `/promotions`. This structural segregation allows for different security rules compared to customer-specific data. Since no authorization context is required to access these top level collections, this simplifies the security rule structure.\n\nThis structure supports required QAPs by:\n\n1.  **Secure List Operations:** Structural segregation ensures that listing operations on `/products` or `/promotions` do not expose customer-specific data, maintaining privacy and security.\n2.  **Authorization Independence:** Path-based ownership for customer data eliminates the need for `get()` calls in security rules, enabling atomic operations and easier debugging.\n3.  **Data Integrity:** The structure facilitates enforcing invariants such as ownership and timestamps, ensuring data consistency and reliability."
+    "reasoning": "The Firestore structure is designed to manage an e-commerce admin panel focusing on Members, orders, customers, and promotions. It prioritizes Authorization Independence using path-based ownership for user-specific data and structural segregation for different data types. Since this is an admin panel, we won't have the user generated content. Instead, we will have admin controlled content.\n\n- **Customers:** Customer accounts are managed under `/customers/{customerId}`. This adheres to the Path-Based Ownership access model, simplifying security rules and ensuring each customer's data is isolated and secure. Orders are stored as a subcollection of customers at `/customers/{customerId}/orders/{orderId}`. This establishes a clear parent-child relationship, making it easy to query orders for a specific customer.\n- **Members & Promotions:** Members and promotions are stored in root-level collections `/Members` and `/promotions`. This structural segregation allows for different security rules compared to customer-specific data. Since no authorization context is required to access these top level collections, this simplifies the security rule structure.\n\nThis structure supports required QAPs by:\n\n1.  **Secure List Operations:** Structural segregation ensures that listing operations on `/Members` or `/promotions` do not expose customer-specific data, maintaining privacy and security.\n2.  **Authorization Independence:** Path-based ownership for customer data eliminates the need for `get()` calls in security rules, enabling atomic operations and easier debugging.\n3.  **Data Integrity:** The structure facilitates enforcing invariants such as ownership and timestamps, ensuring data consistency and reliability."
   }
 }

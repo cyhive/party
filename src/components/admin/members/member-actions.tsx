@@ -7,16 +7,18 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useModal } from "@/context/modal-context";
-import { Product } from "@/lib/types";
+} from "../../ui/dropdown-menu";
+import { useModal } from "../../../context/modal-context";
+import { useRouter } from "next/navigation";
+import { Member } from "../../../lib/types";
 
-interface ProductActionsProps {
-  product: Product;
+interface MemberActionsProps {
+  Member: Member;
 }
 
-export function ProductActions({ product }: ProductActionsProps) {
+export function MemberActions({ Member }: MemberActionsProps) {
   const { openModal } = useModal();
+  const router = useRouter();
 
   return (
     <DropdownMenu>
@@ -26,13 +28,17 @@ export function ProductActions({ product }: ProductActionsProps) {
           <MoreHorizontal className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => openModal("editProduct", { product })}>
+      <DropdownMenuContent side="bottom" align="end">
+        <DropdownMenuItem
+          onClick={() => {
+            openModal("editMember", { Member });
+          }}
+        >
           <Pencil className="mr-2 h-4 w-4" />
           Edit
         </DropdownMenuItem>
         <DropdownMenuItem
-          onClick={() => openModal("confirmDeleteProduct", { product })}
+          onClick={() => openModal("confirmDeleteMember", { Member })}
           className="text-destructive"
         >
           <Trash2 className="mr-2 h-4 w-4" />

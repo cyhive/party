@@ -9,10 +9,10 @@ const queryClient = new QueryClient();
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <QueryClientProvider client={queryClient}>
+    
       <ModalProvider>
         {children}
       </ModalProvider>
-    </QueryClientProvider>
+    
   );
 }

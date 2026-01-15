@@ -15,7 +15,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Promotion } from "@/lib/types";
 import { showToast } from "@/lib/toast";
-import { DeleteModal } from "@/components/admin/products/product-delete-modal";
+import { DeleteModal } from "@/components/admin/members/member-delete-modal";
 
 export default function PromotionsPage() {
   const [promotions, setPromotions] = React.useState<Promotion[]>([]);

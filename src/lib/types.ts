@@ -10,19 +10,24 @@ export const categorySchema = z.object({
 
 export type Category = z.infer<typeof categorySchema>;
 
-export const productSchema = z.object({
+export const MemberSchema = z.object({
   id: z.string(),
   name: z.string(),
-  price: z.number(),
-  stock: z.number(),
-  status: z.enum(["in stock", "low stock", "out of stock"]),
-  description: z.string().optional(),
+  mobileNumber: z.string().optional(),
+  bloodGroup: z.string().optional(),
+  age: z.number().optional(),
+  occupation: z.string().optional(),
+  educationQualification: z.string().optional(),
+  rationCardType: z.string().optional(),
+  disease: z.string().optional(),
+  schemes: z.array(z.string()).default([]),
+  others: z.string().optional(),
   images: z.array(z.string()).default([]),
   createdAt: z.string(),
   categoryId: z.string().nullable(),
 });
 
-export type Product = z.infer<typeof productSchema>;
+export type Member = z.infer<typeof MemberSchema>;
 
 export type Order = {
   id: string;

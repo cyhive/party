@@ -11,7 +11,7 @@ import {
   getFilteredRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { DataTablePagination } from "@/components/data-table/data-table-pagination";
+import { DataTablePagination } from "../../data-table/data-table-pagination";
 import {
   Table,
   TableBody,
@@ -19,18 +19,18 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "../../ui/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useModal } from "@/context/modal-context";
-import type { Product } from "@/lib/types";
+import { useModal } from "../../../context/modal-context";
+
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
 
-export function ProductTable<TData extends { id: string }, TValue>({
+export function MemberTable<TData extends { id: string }, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
@@ -38,7 +38,7 @@ export function ProductTable<TData extends { id: string }, TValue>({
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [rowSelection, setRowSelection] = React.useState({});
   const [globalFilter, setGlobalFilter] = React.useState("");
-
+  //  console.log(data,"data")
   const table = useReactTable({
     data,
     columns,
@@ -64,7 +64,7 @@ export function ProductTable<TData extends { id: string }, TValue>({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <Input
-          placeholder="Filter products..."
+          placeholder="Filter Members..."
           value={globalFilter ?? ""}
           onChange={(event) => setGlobalFilter(event.target.value)}
           className="max-w-sm"
@@ -79,8 +79,8 @@ export function ProductTable<TData extends { id: string }, TValue>({
               size="sm"
               onClick={() => {
                 // Use modal instead of direct delete
-                openModal("confirmDeleteProducts", {
-                  products: selectedRows.map((row) => row.original),
+                openModal("confirmDeleteMembers", {
+                  Members: selectedRows.map((row) => row.original),
                   count: selectedRows.length,
                 });
                 table.resetRowSelection();
