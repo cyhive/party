@@ -32,6 +32,9 @@ export async function PUT(
       kudumbasreeName: formData.get("kudumbasreeName"),
       voterId: formData.get("voterId"),
 
+      bloodGroup: formData.get("bloodGroup"),
+      rationCardType: formData.get("rationCardType"),
+
       schemes: JSON.parse((formData.get("schemes") as string) || "[]"),
     };
 
@@ -112,4 +115,3 @@ export async function PUT(
 
 
     /* ------------------ DB UPDATE ------------------ */
-    

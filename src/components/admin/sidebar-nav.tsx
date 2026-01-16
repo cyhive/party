@@ -11,10 +11,11 @@ import {
   Settings,
   Mountain,
   PanelLeft,
+  ChevronUp,
+  ChevronDown,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useEffect } from "react";
 
 const navItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -31,118 +32,125 @@ function cn(...classes: (string | boolean | undefined)[]) {
 
 export function SidebarNav() {
   const pathname = usePathname();
+
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   const toggleSidebar = () => {
     setIsCollapsed(!isCollapsed);
   };
 
-  // Simulate loading for navigation
+  const toggleMobileSidebar = () => {
+    setIsMobileOpen(!isMobileOpen);
+  };
+
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 100);
+    const timer = setTimeout(() => setIsLoading(false), 100);
     return () => clearTimeout(timer);
   }, []);
 
+  /* ----------------------------- Loading UI ----------------------------- */
   if (isLoading) {
     return (
-      <div
-        className={cn(
-          "relative h-screen bg-card text-card-foreground border-r transition-all duration-300 ease-in-out",
-          isCollapsed ? "w-16" : "w-64"
-        )}
-      >
-        <div className="flex h-full flex-col">
-          <div className="flex items-center justify-between p-4 border-b">
-            {!isCollapsed && (
-              <div className="flex items-center gap-2">
-                <Skeleton className="h-6 w-6" />
-                <Skeleton className="h-6 w-32" />
-              </div>
-            )}
-            <Skeleton className="h-8 w-8" />
-          </div>
-          <nav className="flex-1 space-y-2 p-4">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="flex items-center gap-3 px-3 py-2">
-                <Skeleton className="h-5 w-5" />
-                {!isCollapsed && <Skeleton className="h-4 w-20" />}
-              </div>
-            ))}
-          </nav>
-          <div className="mt-auto p-4 border-t">
-            <div className="flex items-center gap-3 px-3 py-2">
-              <Skeleton className="h-5 w-5" />
-              {!isCollapsed && <Skeleton className="h-4 w-16" />}
-            </div>
-          </div>
-        </div>
+      <div className="hidden md:block h-screen w-64 border-r p-4">
+        <Skeleton className="h-6 w-40 mb-4" />
+        <Skeleton className="h-4 w-full mb-2" />
+        <Skeleton className="h-4 w-full mb-2" />
+        <Skeleton className="h-4 w-full" />
       </div>
     );
   }
 
   return (
-    <div
-      className={cn(
-        "relative h-screen bg-card text-card-foreground border-r transition-all duration-300 ease-in-out",
-        isCollapsed ? "w-16" : "w-64"
-      )}
-    >
-      <div className="flex h-full flex-col">
-        <div className="flex items-center justify-between p-4 border-b">
-          {!isCollapsed && (
-            <Link
-              href="/dashboard"
-              className="flex items-center gap-2 font-headline text-lg"
+    <>
+      {/* ---------------------- MOBILE TOGGLE BUTTON ---------------------- */}
+      <button
+        onClick={toggleMobileSidebar}
+        className="fixed top-4 right-4 z-50 md:hidden bg-card border rounded-full p-2 shadow"
+      >
+        {isMobileOpen ? (
+          <ChevronUp className="h-6 w-6" />
+        ) : (
+          <ChevronDown className="h-6 w-6" />
+        )}
+        <span className="sr-only">Toggle Sidebar</span>
+      </button>
+
+      {/* ----------------------------- SIDEBAR ----------------------------- */}
+      <div
+        className={cn(
+          "fixed md:relative z-40 h-screen bg-card text-card-foreground border-r transition-all duration-300 ease-in-out",
+          "md:translate-x-0",
+          isMobileOpen ? "translate-x-0" : "-translate-x-full",
+          isCollapsed ? "md:w-16" : "md:w-64",
+          "w-64"
+        )}
+      >
+        <div className="flex h-full flex-col">
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b">
+            {!isCollapsed && (
+              <Link
+                href="/dashboard"
+                className="flex items-center gap-2 font-headline text-lg"
+              >
+                <Mountain className="h-6 w-6 text-primary" />
+                <span>Pacha Bhoomi</span>
+              </Link>
+            )}
+
+            {/* Desktop collapse button only */}
+            <button
+              onClick={toggleSidebar}
+              className="hidden md:flex p-2 rounded-md hover:bg-accent"
             >
-              <Mountain className="h-6 w-6 text-primary" />
-              <span>Pacha Bhoomi</span>
-            </Link>
-          )}
-          <button
-            onClick={toggleSidebar}
-            className="p-2 rounded-md hover:bg-accent"
-          >
-            <PanelLeft className="h-6 w-6" />
-            <span className="sr-only">Toggle Sidebar</span>
-          </button>
-        </div>
-        <nav className="flex-1 space-y-2 p-4">
-          {navItems.map((item) => (
+              <PanelLeft className="h-6 w-6" />
+            </button>
+          </div>
+
+          {/* Navigation */}
+          <nav className="flex-1 space-y-2 p-4">
+            {navItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setIsMobileOpen(false)}
+                className={cn(
+                  "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
+                  pathname.startsWith(item.href) &&
+                    "bg-primary/10 text-primary",
+                  isCollapsed && "md:justify-center md:px-2 md:py-3"
+                )}
+              >
+                <item.icon
+                  className={cn("h-5 w-5", isCollapsed && "md:h-6 md:w-6")}
+                />
+                {!isCollapsed && <span>{item.label}</span>}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Settings */}
+          <div className="mt-auto p-4 border-t">
             <Link
-              key={item.href}
-              href={item.href}
-              title={isCollapsed ? item.label : undefined}
+              href="/settings"
+              onClick={() => setIsMobileOpen(false)}
               className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
-                pathname.startsWith(item.href) && "bg-primary/10 text-primary",
-                isCollapsed && "justify-center px-2 py-3"
+                pathname.startsWith("/settings") &&
+                  "bg-primary/10 text-primary",
+                isCollapsed && "md:justify-center md:px-2 md:py-3"
               )}
             >
-              <item.icon className={cn("h-5 w-5", isCollapsed && "h-6 w-6")} />
-              {!isCollapsed && <span>{item.label}</span>}
-              {isCollapsed && <span className="sr-only">{item.label}</span>}
+              <Settings
+                className={cn("h-5 w-5", isCollapsed && "md:h-6 md:w-6")}
+              />
+              {!isCollapsed && <span>Settings</span>}
             </Link>
-          ))}
-        </nav>
-        <div className="mt-auto p-4 border-t">
-          <Link
-            href="/settings"
-            title={isCollapsed ? "Settings" : undefined}
-            className={cn(
-              "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
-              pathname.startsWith("/settings") && "bg-primary/10 text-primary",
-              isCollapsed && "justify-center px-2 py-3"
-            )}
-          >
-            <Settings className={cn("h-5 w-5", isCollapsed && "h-6 w-6")} />
-            {!isCollapsed && <span>Settings</span>}
-            {isCollapsed && <span className="sr-only">Settings</span>}
-          </Link>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

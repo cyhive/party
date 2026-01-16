@@ -7,7 +7,6 @@ import { ArrowUpDown } from "lucide-react";
 import type { Member } from "../../../lib/types";
 import { MemberActions } from "./member-actions";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
 import { ImagePreviewModal } from "./image-preview-modal";
 
 /* -------------------------------------------------------------------------- */
@@ -90,10 +89,12 @@ export const createColumns = ({
     accessorKey: "images",
     header: "Member Image",
     cell: ({ row }) => (
-      <ImageCell
-        images={row.original.images || []}
-        title="Member Images"
-      />
+      <div className="hidden md:block">
+        <ImageCell
+          images={row.original.images || []}
+          title="Member Images"
+        />
+      </div>
     ),
   },
 
@@ -102,10 +103,12 @@ export const createColumns = ({
     accessorKey: "rationCardImages",
     header: "Ration Card",
     cell: ({ row }) => (
-      <ImageCell
-        images={row.original.rationCardImages || []}
-        title="Ration Card Images"
-      />
+      <div className="hidden md:block">
+        <ImageCell
+          images={row.original.rationCardImages || []}
+          title="Ration Card Images"
+        />
+      </div>
     ),
   },
 
@@ -114,10 +117,12 @@ export const createColumns = ({
     accessorKey: "otherImages",
     header: "Other Images",
     cell: ({ row }) => (
-      <ImageCell
-        images={row.original.otherImages || []}
-        title="Other Images"
-      />
+      <div className="hidden md:block">
+        <ImageCell
+          images={row.original.otherImages || []}
+          title="Other Images"
+        />
+      </div>
     ),
   },
 
@@ -137,13 +142,6 @@ export const createColumns = ({
     ),
   },
 
-  /* ------------------------------ Category ------------------------------ */
-  {
-    accessorKey: "categoryId",
-    header: "Category",
-    cell: ({ row }) => row.getValue("categoryId") || "-",
-  },
-
   /* ------------------------------ Details ------------------------------- */
   {
     accessorKey: "details",
@@ -152,9 +150,11 @@ export const createColumns = ({
       const member = row.original;
 
       return (
-        <div className="text-sm text-muted-foreground space-y-1 max-w-[320px]">
+        <div className="hidden md:block text-sm text-muted-foreground space-y-1 max-w-[320px]">
           <p><b>Mobile:</b> {member.mobileNumber || "-"}</p>
           <p><b>Age:</b> {member.age || "-"}</p>
+          <p><b>Blood Group:</b> {member.bloodGroup || "-"}</p>
+          <p><b>Ration Card:</b> {member.rationCardType || "-"}</p>
           <p><b>Occupation:</b> {member.occupation || "-"}</p>
           <p><b>Education:</b> {member.educationQualification || "-"}</p>
           <p><b>Disease:</b> {member.disease || "-"}</p>
@@ -162,7 +162,6 @@ export const createColumns = ({
             <b>Schemes:</b>{" "}
             {member.schemes?.length ? member.schemes.join(", ") : "-"}
           </p>
-          <p><b>Ward:</b> {member.wardArea || "-"}</p>
           <p><b>Address:</b> {member.address || "-"}</p>
           <p>
             <b>DOB:</b>{" "}
@@ -176,6 +175,12 @@ export const createColumns = ({
         </div>
       );
     },
+  },
+
+  /* ------------------------------- Ward -------------------------------- */
+  {
+    accessorKey: "wardArea",
+    header: "Ward",
   },
 
   /* ------------------------------- Date -------------------------------- */
@@ -195,10 +200,16 @@ export const createColumns = ({
     cell: ({ row }) => {
       const createdAt = row.getValue("createdAt");
       if (!createdAt) return "-";
+
       const date = new Date(createdAt as string);
-      return isNaN(date.getTime())
-        ? "-"
-        : new Intl.DateTimeFormat("en-IN").format(date);
+
+      return (
+        <span className="hidden md:inline">
+          {isNaN(date.getTime())
+            ? "-"
+            : new Intl.DateTimeFormat("en-IN").format(date)}
+        </span>
+      );
     },
   },
 

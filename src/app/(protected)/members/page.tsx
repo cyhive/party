@@ -19,6 +19,9 @@ type MemberFilters = {
   educationQualification?: string;
   disease?: string;
   occupation?: string;
+  wardArea?: string;
+  schemes?: string;
+  kudumbasreeName?: string;
 };
 
 export default function MembersPage() {
@@ -68,63 +71,65 @@ export default function MembersPage() {
 
   /* ===================== CREATE / UPDATE (UPLOAD SUPPORT) ===================== */
   const handleSaveMember = async (
-  data: any,
-  pendingFiles?: (File | null)[],
-  id?: string
-) => {
-  try {
-    const formData = new FormData();
+    data: any,
+    pendingFiles?: (File | null)[],
+    id?: string
+  ) => {
+    try {
+      const formData = new FormData();
 
-    /* ---------- TEXT FIELDS ---------- */
-    Object.entries(data).forEach(([key, value]) => {
-      if (value === undefined || value === null) return;
+      /* ---------- TEXT FIELDS ---------- */
+      Object.entries(data).forEach(([key, value]) => {
+        if (value === undefined || value === null || value === "") {
+          // Skip empty values to prevent overwriting with empty strings
+          if (key !== "bloodGroup" && key !== "rationCardType") return;
+        }
 
-      if (Array.isArray(value)) {
-        formData.append(key, JSON.stringify(value));
-      } else {
-        formData.append(key, String(value));
-      }
-    });
+        if (Array.isArray(value)) {
+          formData.append(key, JSON.stringify(value));
+        } else {
+          formData.append(key, String(value));
+        }
+      });
 
-    /* ---------- FILES ---------- */
-    pendingFiles?.forEach((file) => {
-      if (file) {
-        const type = (file as any)._uploadType;
-        let key = "images";
-        if (type === "ration") key = "rationCardImages";
-        else if (type === "other") key = "otherImages";
-        formData.append(key, file);
-      }
-    });
+      /* ---------- FILES ---------- */
+      pendingFiles?.forEach((file) => {
+        if (file) {
+          const type = (file as any)._uploadType;
+          let key = "images";
+          if (type === "ration") key = "rationCardImages";
+          else if (type === "other") key = "otherImages";
+          formData.append(key, file);
+        }
+      });
 
-    const url = id ? `/api/members/${id}` : `/api/members`;
-    const method = id ? "PUT" : "POST";
+      const url = id ? `/api/members/${id}` : `/api/members`;
+      const method = id ? "PUT" : "POST";
 
-    const res = await fetch(url, {
-      method,
-      body: formData, // ❗️NO headers
-    });
+      const res = await fetch(url, {
+        method,
+        body: formData,
+      });
 
-    if (!res.ok) throw new Error();
+      if (!res.ok) throw new Error();
 
-    const saved = await res.json();
+      const saved = await res.json();
 
-    /* ---------- UPDATE TABLE ---------- */
-    setMembers((prev) =>
-      id
-        ? prev.map((m) => (m.id === id ? saved : m))
-        : [saved, ...prev]
-    );
+      /* ---------- UPDATE TABLE ---------- */
+      setMembers((prev) =>
+        id
+          ? prev.map((m) => (m.id === id ? { ...m, ...saved } : m))
+          : [saved, ...prev]
+      );
 
-    showToast.success(
-      id ? "Member updated successfully" : "Member created successfully"
-    );
-  } catch (error) {
-    console.error(error);
-    showToast.error("Failed to save member");
-  }
-};
-
+      showToast.success(
+        id ? "Member updated successfully" : "Member created successfully"
+      );
+    } catch (error) {
+      console.error(error);
+      showToast.error("Failed to save member");
+    }
+  };
 
   /* ===================== DELETE ===================== */
   const handleBulkDeleteMembers = async (ids: string[]) => {
@@ -140,6 +145,11 @@ export default function MembersPage() {
     } catch {
       showToast.error("Failed to delete members");
     }
+  };
+
+  const handleResetFilters = () => {
+    setFilters({});
+    fetchMembers({});
   };
 
   const columns = createColumns({
@@ -171,15 +181,27 @@ export default function MembersPage() {
       </div>
 
       {/* ===================== FILTER BAR ===================== */}
-      <div className="flex flex-wrap gap-3 bg-muted/50 p-4 rounded-lg">
-        <input placeholder="Min Age" className="border px-3 py-2 rounded-md"
-          onChange={(e) => updateFilter("ageMin", e.target.value)} />
+      <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2 bg-muted/50 p-3 md:p-4 rounded-lg transition-all">
+        <input
+          placeholder="Min Age"
+          className="border px-3 py-2 rounded-md text-sm flex-1 sm:flex-none"
+          value={filters.ageMin || ""}
+          onChange={(e) => updateFilter("ageMin", e.target.value)}
+        />
 
-        <input placeholder="Max Age" className="border px-3 py-2 rounded-md"
-          onChange={(e) => updateFilter("ageMax", e.target.value)} />
+        <input
+          placeholder="Max Age"
+          className="border px-3 py-2 rounded-md text-sm flex-1 sm:flex-none"
+          value={filters.ageMax || ""}
+          onChange={(e) => updateFilter("ageMax", e.target.value)}
+        />
 
-        <select className="border px-3 py-2 rounded-md"
-          onChange={(e) => updateFilter("bloodGroup", e.target.value)}>
+        {/* Blood Group Dropdown */}
+        <select
+          className="border px-3 py-2 rounded-md text-sm flex-1 sm:flex-none"
+          value={filters.bloodGroup || ""}
+          onChange={(e) => updateFilter("bloodGroup", e.target.value)}
+        >
           <option value="">Blood Group</option>
           <option value="O+">O+</option>
           <option value="O-">O-</option>
@@ -191,30 +213,104 @@ export default function MembersPage() {
           <option value="AB-">AB-</option>
         </select>
 
-        <select className="border px-3 py-2 rounded-md"
-          onChange={(e) => updateFilter("rationCardType", e.target.value)}>
-          <option value="">Ration Card</option>
-          <option value="Yellow card">Yellow card</option>
-          <option value="Pink card">Pink card</option>
+        <select
+          className="border px-3 py-2 rounded-md text-sm flex-1 sm:flex-none"
+          value={filters.rationCardType || ""}
+          onChange={(e) => updateFilter("rationCardType", e.target.value)}
+        >
+          <option value="">Ration Card Type</option>
           <option value="Blue card">Blue card</option>
+          <option value="Pink card">Pink card</option>
           <option value="White card">White card</option>
+          <option value="Yellow card">Yellow card</option>
         </select>
 
-        <input placeholder="Education" className="border px-3 py-2 rounded-md"
-          onChange={(e) => updateFilter("educationQualification", e.target.value)} />
+        <input
+          placeholder="Education"
+          className="border px-3 py-2 rounded-md text-sm flex-1 sm:flex-none"
+          value={filters.educationQualification || ""}
+          onChange={(e) => updateFilter("educationQualification", e.target.value)}
+        />
 
-        <input placeholder="Disease" className="border px-3 py-2 rounded-md"
-          onChange={(e) => updateFilter("disease", e.target.value)} />
+        <input
+          placeholder="Disease"
+          className="border px-3 py-2 rounded-md text-sm flex-1 sm:flex-none"
+          value={filters.disease || ""}
+          onChange={(e) => updateFilter("disease", e.target.value)}
+        />
 
-        <input placeholder="Occupation" className="border px-3 py-2 rounded-md"
-          onChange={(e) => updateFilter("occupation", e.target.value)} />
+        <input
+          placeholder="Occupation"
+          className="border px-3 py-2 rounded-md text-sm flex-1 sm:flex-none"
+          value={filters.occupation || ""}
+          onChange={(e) => updateFilter("occupation", e.target.value)}
+        />
 
-        <Button onClick={() => fetchMembers(filters)}>Apply Filters</Button>
+        {/* Ward Dropdown */}
+        <select
+          className="border px-3 py-2 rounded-md text-sm flex-1 sm:flex-none"
+          value={filters.wardArea || ""}
+          onChange={(e) => updateFilter("wardArea", e.target.value)}
+        >
+          <option value="">Select Ward</option>
+          <option value="പെരുംചിറക്കോണം - മുള്ളുംമ്മൂട്">പെരുംചിറക്കോണം - മുള്ളുംമ്മൂട്</option>
+          <option value="കരിക്കകം - തങ്കക്കല്ല്">കരിക്കകം - തങ്കക്കല്ല്</option>
+          <option value="കൈതോട് - കുരിയണിക്കര">കൈതോട് - കുരിയണിക്കര</option>
+          <option value="കോങ്കലിൽ - മൂന്നാംകൊണം">കോങ്കലിൽ - മൂന്നാംകൊണം</option>
+          <option value="ഇരപ്പിൽ - കോട്ടൂർക്കോണം">ഇരപ്പിൽ - കോട്ടൂർക്കോണം</option>
+          <option value="എലിക്കുന്നാം മുഗൾ - കുന്നുംപുറം - ഈട്ടിമൂട്">എലിക്കുന്നാം മുഗൾ - കുന്നുംപുറം - ഈട്ടിമൂട്</option>
+        </select>
 
-        <Button variant="outline" onClick={() => {
-          setFilters({});
-          fetchMembers();
-        }}>
+        {/* Schemes Input */}
+        <input
+          placeholder="Schemes"
+          className="border px-3 py-2 rounded-md text-sm flex-1 sm:flex-none"
+          value={filters.schemes || ""}
+          onChange={(e) => updateFilter("schemes", e.target.value)}
+        />
+
+        {/* Kudumbasree Dropdown */}
+        <select
+          className="border px-3 py-2 rounded-md text-sm flex-1 sm:flex-none"
+          value={filters.kudumbasreeName || ""}
+          onChange={(e) => updateFilter("kudumbasreeName", e.target.value)}
+        >
+          <option value="">Select Kudumbasree</option>
+          <option value="ആവണി">ആവണി</option>
+          <option value="വിദ്യ">വിദ്യ</option>
+          <option value="തുല്യത">തുല്യത</option>
+          <option value="സമത്വം">സമത്വം</option>
+          <option value="മൈത്രി">മൈത്രി</option>
+          <option value="പവിത്രം">പവിത്രം</option>
+          <option value="മഹാദേവർ">മഹാദേവർ</option>
+          <option value="മലർവാടി">മലർവാടി</option>
+          <option value="സാന്ത്വനം">സാന്ത്വനം</option>
+          <option value="ഉണർവ്വ്">ഉണർവ്വ്</option>
+          <option value="കൃഷ്ണ">കൃഷ്ണ</option>
+          <option value="ത്രയംബകം">ത്രയംബകം</option>
+          <option value="മഞ്ഞും മൂട്ടിൽ">മഞ്ഞും മൂട്ടിൽ</option>
+          <option value="ബിസ്മി">ബിസ്മി</option>
+          <option value="അക്ഷയ">അക്ഷയ</option>
+          <option value="തേജസ്‌">തേജസ്‌</option>
+          <option value="സർവ്വോദയ">സർവ്വോദയ</option>
+          <option value="മഞ്ചാടി">മഞ്ചാടി</option>
+          <option value="കാർത്തിക">കാർത്തിക</option>
+        </select>
+
+        <Button
+          onClick={() => fetchMembers(filters)}
+          size="sm"
+          className="flex-1 sm:flex-none"
+        >
+          Apply
+        </Button>
+
+        <Button
+          variant="outline"
+          onClick={handleResetFilters}
+          size="sm"
+          className="flex-1 sm:flex-none"
+        >
           Reset
         </Button>
       </div>

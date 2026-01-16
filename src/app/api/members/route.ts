@@ -15,6 +15,9 @@ export async function GET(req: Request) {
     const educationQualification = searchParams.get("educationQualification");
     const disease = searchParams.get("disease");
     const occupation = searchParams.get("occupation");
+    const wardArea = searchParams.get("wardArea");
+    const schemes = searchParams.get("schemes");
+    const kudumbasreeName = searchParams.get("kudumbasreeName");
     const search = searchParams.get("search");
 
     const query: any = {};
@@ -29,6 +32,8 @@ export async function GET(req: Request) {
     /* EXACT MATCH */
     if (bloodGroup) query.bloodGroup = bloodGroup;
     if (rationCardType) query.rationCardType = rationCardType;
+    if (wardArea) query.wardArea = wardArea;
+    if (kudumbasreeName) query.kudumbasreeName = kudumbasreeName;
 
     /* NORMALIZED FIELDS */
     if (educationQualification)
@@ -38,6 +43,10 @@ export async function GET(req: Request) {
 
     if (occupation)
       query.occupation = { $regex: occupation, $options: "i" };
+
+    /* SCHEMES ARRAY FILTER */
+    if (schemes)
+      query.schemes = { $in: [schemes] };
 
     /* GLOBAL SEARCH */
     if (search) {
@@ -121,6 +130,9 @@ export async function POST(req: Request) {
       images,
       rationCardImages,
       otherImages,
+
+      bloodGroup: formData.get("bloodGroup"),
+      rationCardType: formData.get("rationCardType"),
 
       createdAt: new Date(),
     };
