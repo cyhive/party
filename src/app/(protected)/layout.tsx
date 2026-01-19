@@ -25,11 +25,12 @@ export default function DashboardLayout({ children }: PropsWithChildren) {
   const getLoadingType = () => {
     if (pathname === "/dashboard") return "dashboard";
     if (
-      pathname.includes("/Members") ||
+      pathname.includes("/members") ||
       pathname.includes("/promotions") ||
       pathname.includes("/categories") ||
       pathname.includes("/orders") ||
-      pathname.includes("/customers")
+      pathname.includes("/customers") ||
+      pathname.includes("/uploads")
     )
       return "table";
     return "generic";

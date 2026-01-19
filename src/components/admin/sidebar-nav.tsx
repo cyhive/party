@@ -13,6 +13,7 @@ import {
   PanelLeft,
   ChevronUp,
   ChevronDown,
+  Image,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -24,6 +25,8 @@ const navItems = [
   { href: "/categories", icon: Package, label: "Categories" },
   { href: "/customers", icon: Users, label: "Customers" },
   { href: "/promotions", icon: TicketPercent, label: "Promotions" },
+  { href: "/whatwehavedone", icon: Image, label: "What We Have Done" },
+  { href: "/news", icon: Image, label: "News" },
 ];
 
 function cn(...classes: (string | boolean | undefined)[]) {
